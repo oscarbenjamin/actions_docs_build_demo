@@ -49,6 +49,9 @@ jobs:
     # when the PR is pushed to).
     if: github.ref == 'refs/heads/master'
 
+    # Wait for docs to build before dploying them!
+    needs: build-docs
+
     steps:
       - uses: actions/download-artifact@v2
         with:
