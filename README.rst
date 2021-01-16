@@ -95,3 +95,18 @@ Now create a file ``.github/workflows/builddocs.yml`` with this inside::
         - run: pip install sphinx
         - working-directory: ./doc
           run: make html
+
+Have the docs deploy to the docs repo
+-------------------------------------
+
+Create public/private SSH keys:
+
+ $ ssh-keygen -t rsa -b 4096 -C "$(git config user.email)" -f gh-pages -N ""
+
+This create ``gh-pages`` (private key) and ``gh-pages.pub`` (public key).
+
+Upload the private key to the code repo as a "deploy key". Upload the public
+key to the docs repo as a "repository secret" with the environment variable
+name ``ACTIONS_DEPLOY_KEY`` and give it write access. Instructions here:
+
+https://github.com/marketplace/actions/github-pages-action#%EF%B8%8F-create-ssh-deploy-key
