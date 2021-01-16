@@ -93,11 +93,99 @@ Now create a file ``.github/workflows/builddocs.yml`` with this inside::
           with:
             python-version: '3.x'
         - run: pip install sphinx
-        - working-directory: ./doc
+
+        - name: Build docs
+          working-directory: ./doc
           run: make html
+
+        # This makes the doc zip available from GitHub on a PR before the PR
+        # is merged. I'm not sure yet if that is a good idea. Apparently
+        # github "bills" for this storage but I don't know what impact that
+        # has for non-paying public open source repos.
+        #
+        # It also makes it possible to share the built docs from this job to
+        # the deploy job. It is not strictly necessary for that though as the
+        # deploy job could just be a conditional step in this job.
+
+        - name: Attach docs artifact
+          uses: actions/upload-artifact@v2
+          with:
+            name: htmldocs
+            path: doc/build/html
+
+    #
+    # The two different docs-deploy jobs below are for different approaches to
+    # handling the docs for a repo. The first deploys to the gh-pages branch of
+    # this repo. The second job deploys to a separate docs repo.
+    #
+    # For more information see:
+    #     https://github.com/marketplace/actions/github-pages-action
+    #
+
+
+    # Docs deploy job for the gh-pages branch of this repo
+
+    deploy-docs-branch:
+      name: Deploy the docs to gh-pages branch
+      runs-on: ubuntu-latest
+
+      # Only run this job on the master branch (e.g. after a PR is merged but
+      # not when the PR is pushed to).
+      if: github.ref == 'refs/heads/master'
+
+      # Wait for docs to build before deploying them!
+      needs: build-docs
+
+      steps:
+          # Download the previously uploaded docs that were built
+        - uses: actions/download-artifact@v2
+          with:
+            name: htmldocs
+            path: public
+
+          # This deploys the contents of the ./public directory to the gh-pages
+          # branch of the current repo.
+        - name: Deploy
+          uses: peaceiris/actions-gh-pages@v3
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            publish_dir: ./public
+
+
+    # Docs deploy job to deploy to the *other* repo.
+    #
+    deploy-docs-repo:
+      name: Deploy the docs to docs repo
+      runs-on: ubuntu-latest
+
+      # Only run this job on the master branch (e.g. after a PR is merged but
+      # not when the PR is pushed to).
+      if: github.ref == 'refs/heads/master'
+
+      # Wait for docs to build before deploying them!
+      needs: build-docs
+
+      steps:
+          # Download the previously uploaded docs that were built
+        - uses: actions/download-artifact@v2
+          with:
+            name: htmldocs
+            path: public
+
+          # This deploys the contents of the ./public directory to the gh-pages
+          # branch of the current repo.
+        - name: Deploy
+          uses: peaceiris/actions-gh-pages@v3
+          with:
+            deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+            external_repository: oscarbenjamin/actions_docs_build_demo_docs
+            publish_dir: ./public
+            publish_branch: gh-pages
 
 Have the docs deploy to the docs repo
 -------------------------------------
+
+The ``deploy-doc-repo`` job above will fail until you provide deploy keys.
 
 Create public/private SSH keys:
 
@@ -110,3 +198,21 @@ key to the docs repo as a "repository secret" with the environment variable
 name ``ACTIONS_DEPLOY_KEY`` and give it write access. Instructions here:
 
 https://github.com/marketplace/actions/github-pages-action#%EF%B8%8F-create-ssh-deploy-key
+
+Set up GitHub pages
+-------------------
+
+Go to repo and then settings, options choose the gh-pages branch.
+
+The end results are here:
+
+https://oscarbenjamin.github.io/actions_docs_build_demo/
+
+https://oscarbenjamin.github.io/actions_docs_build_demo_docs/
+
+Conclusion
+----------
+
+Now it's possible to push to one repo and have it deploy the docs either to
+its own gh-pages branch or to a branch in another repo. It's also possible to
+download built docs as an artifact from any PR before merging it.
