@@ -40,6 +40,10 @@ jobs:
     name: Deploy the docs
     runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
     # Check that this is merging to master
     #if: github.ref == 'refs/heads/master'
     #- name: Deploy
