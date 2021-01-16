@@ -16,6 +16,8 @@ another. More explanation here:
 
 https://github.com/oscarbenjamin/actions_docs_build_demo
 
+Let's add a line here to see if it works...
+
 Indices and tables
 ==================
 
