@@ -11,7 +11,10 @@ Welcome to actions_docs_build_demo's documentation!
    :caption: Contents:
 
 This is a demonstration of how to set up a repo that builds docs with sphinx
-running on GitHub Actions.
+running on GitHub Actions. The idea is to test deploying from one repo to
+another. More explanation here:
+
+https://github.com/oscarbenjamin/actions_docs_build_demo
 
 Indices and tables
 ==================
