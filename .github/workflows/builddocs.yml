@@ -40,8 +40,17 @@ jobs:
           name: htmldocs
           path: doc/build/html
 
-  # Docs deploy job
-  deploy-docs:
+  #
+  # The two different docs-deploy jobs below are for different approaches to
+  # handling the docs for a repo. The first deploys to the gh-pages branch of
+  # this repo. The second job deploys to a separate docs repo.
+  #
+  # For more information see:
+  #     https://github.com/marketplace/actions/github-pages-action
+  #
+
+  # Docs deploy job for the gh-pages branch of this repo
+  deploy-docs-branch:
     name: Deploy the docs
     runs-on: ubuntu-latest
 
@@ -66,3 +75,32 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
+
+  # Docs deploy job to deploy to the *other* repo.
+  deploy-docs-branch:
+    name: Deploy the docs
+    runs-on: ubuntu-latest
+
+    # Only run this job on the master branch (after a PR is merged but not
+    # when the PR is pushed to).
+    if: github.ref == 'refs/heads/master'
+
+    # Wait for docs to build before dploying them!
+    needs: build-docs
+
+    steps:
+        # Download the previously uploaded docs that were built
+      - uses: actions/download-artifact@v2
+        with:
+          name: htmldocs
+          path: public
+
+        # This deploys the contents of the ./public directory to the gh-pages
+        # branch of the current repo.
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: oscarbenjamin/actions_docs_build_demo_docs
+          publish_dir: ./public
+          publish_branch: gh-pages
