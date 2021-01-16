@@ -11,29 +11,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-
-      - name: Setup Python 3.x
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-
-      - name: Install sphinx
-        run: pip install sphinx
+      - run: pip install sphinx
 
       - name: Build docs
         working-directory: ./doc
         run: make html
 
-        # This makes the doc zip available from GitHub on a PR before the PR
-        # is merged. I'm not sure yet if that is a good idea. Apparently
-        # github "bills" for this storage but I don't know what impact that
-        # has for non-paying public open source repos.
-        #
-        # It also makes it possible to share the built docs from this job to
-        # the deploy job. It is not strictly necessary for that though as the
-        # deploy job could really just be a conditional step in this job.
+      # This makes the doc zip available from GitHub on a PR before the PR
+      # is merged. I'm not sure yet if that is a good idea. Apparently
+      # github "bills" for this storage but I don't know what impact that
+      # has for non-paying public open source repos.
+      #
+      # It also makes it possible to share the built docs from this job to
+      # the deploy job. It is not strictly necessary for that though as the
+      # deploy job could just be a conditional step in this job.
+
       - name: Attach docs artifact
         uses: actions/upload-artifact@v2
         with:
@@ -49,16 +45,18 @@ jobs:
   #     https://github.com/marketplace/actions/github-pages-action
   #
 
+
   # Docs deploy job for the gh-pages branch of this repo
+
   deploy-docs-branch:
-    name: Deploy the docs
+    name: Deploy the docs to gh-pages branch
     runs-on: ubuntu-latest
 
-    # Only run this job on the master branch (after a PR is merged but not
-    # when the PR is pushed to).
+    # Only run this job on the master branch (e.g. after a PR is merged but
+    # not when the PR is pushed to).
     if: github.ref == 'refs/heads/master'
 
-    # Wait for docs to build before dploying them!
+    # Wait for docs to build before deploying them!
     needs: build-docs
 
     steps:
@@ -76,16 +74,18 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
 
+
   # Docs deploy job to deploy to the *other* repo.
+  #
   deploy-docs-repo:
-    name: Deploy the docs
+    name: Deploy the docs to docs repo
     runs-on: ubuntu-latest
 
-    # Only run this job on the master branch (after a PR is merged but not
-    # when the PR is pushed to).
+    # Only run this job on the master branch (e.g. after a PR is merged but
+    # not when the PR is pushed to).
     if: github.ref == 'refs/heads/master'
 
-    # Wait for docs to build before dploying them!
+    # Wait for docs to build before deploying them!
     needs: build-docs
 
     steps:
