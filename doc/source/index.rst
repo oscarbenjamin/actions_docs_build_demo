@@ -18,6 +18,8 @@ https://github.com/oscarbenjamin/actions_docs_build_demo
 
 This is a test to see if this line appears from the PR.
 
+This is another test.
+
 Indices and tables
 ==================
 
