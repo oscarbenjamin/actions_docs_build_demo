@@ -57,8 +57,9 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: htmldocs
+          path: public
 
-      - run: ls
+      - run: ls -R
 
           #- uses: peaceiris/actions-gh-pages@v3
           # with:
