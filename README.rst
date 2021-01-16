@@ -57,9 +57,21 @@ Copy in the docs built from the code repo::
   $ git add -A .
   $ git commit -m 'initial doc import'
 
-Now go to GitHub, create two new empty repos and push both up::
+Now go to GitHub, create two new empty repos and push both up e.g.::
 
   $ cd actions_doc_build_demo
   $ git remote add origin https://github.com/oscarbenjamin/actions_docs_build_demo.git
   $ git push -u origin master
+
+Have the docs build on GitHub Actions
+-------------------------------------
+
+Next we want to set something up that will build the docs on Actions as a test
+of each PR and also the master branch. Actions is automatically enabled on any
+repository and runs as soon as you add workflow files. Create a workflow
+folder and add a workflow to build the docs::
+
+  $ mkdir -p .github/workflows
+
+Now create a file ``.github/workflows/builddocs.yml`` with this inside::
 
