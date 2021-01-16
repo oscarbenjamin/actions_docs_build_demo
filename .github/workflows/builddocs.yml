@@ -59,9 +59,10 @@ jobs:
           name: htmldocs
           path: public
 
-      - run: ls -R
-
-          #- uses: peaceiris/actions-gh-pages@v3
-          # with:
-      #github_token: ${{ secrets.GITHUB_TOKEN }}
-      #publish_dir: ./public
+        # This deploys the contents of the ./public directory to the gh-pages
+        # branch of the current repo.
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
