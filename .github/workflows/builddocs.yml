@@ -77,7 +77,7 @@ jobs:
           publish_dir: ./public
 
   # Docs deploy job to deploy to the *other* repo.
-  deploy-docs-branch:
+  deploy-docs-repo:
     name: Deploy the docs
     runs-on: ubuntu-latest
 
