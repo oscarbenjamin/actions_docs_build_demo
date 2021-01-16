@@ -16,9 +16,7 @@ another. More explanation here:
 
 https://github.com/oscarbenjamin/actions_docs_build_demo
 
-This is a test to see if this line appears from the PR.
-
-This is another test.
+Let's add a line here to see if it works...
 
 Indices and tables
 ==================
