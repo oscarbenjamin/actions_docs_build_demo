@@ -11,11 +11,11 @@ Setup a repo that builds with sphinx
 ------------------------------------
 
 Create the main code repo:
-```console
-$ mkdir actions_docs_build_demo
-$ cd actions_docs_build_demo
-$ git init
-````
+
+  $ mkdir actions_docs_build_demo
+  $ cd actions_docs_build_demo
+  $ git init
+
 
 Add a doc folder and initialise sphinx:
 ```console
@@ -55,5 +55,12 @@ Copy in the docs built from the code repo:
 ```console
 $ cp -r ../actions_docs_build_demo/doc/build/html/* .
 $ git add -A .
-$ git commit -, 'initial doc import'
+$ git commit -m 'initial doc import'
+```
+
+Now go to GitHub, create two new empty repos and push both up.
+```console
+$ cd actions_doc_build_demo
+$ git remote add origin https://github.com/oscarbenjamin/actions_docs_build_demo.git
+$ git push -u origin master
 ```
