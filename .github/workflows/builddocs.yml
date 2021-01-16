@@ -37,8 +37,8 @@ jobs:
       - name: Attach docs artifact
         uses: actions/upload-artifact@v2
         with:
-          name: built_docs
-          path: doc/build/*
+          name: htmldocs
+          path: doc/build/html
 
   # Docs deploy job
   deploy-docs:
@@ -58,15 +58,11 @@ jobs:
         # Download the previously uploaded docs that were built
       - uses: actions/download-artifact@v2
         with:
-          name: built_docs
+          name: htmldocs
 
-      - name: Display structure of downloaded files
-        run: ls -R
+      - run: ls html
 
-    # Check that this is merging to master
-    #if: github.ref == 'refs/heads/master'
-    #- name: Deploy
-    #uses: peaceiris/actions-gh-pages@v3
-    #with:
+          #- uses: peaceiris/actions-gh-pages@v3
+          # with:
       #github_token: ${{ secrets.GITHUB_TOKEN }}
       #publish_dir: ./public
