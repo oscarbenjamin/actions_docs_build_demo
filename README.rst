@@ -75,3 +75,23 @@ folder and add a workflow to build the docs::
 
 Now create a file ``.github/workflows/builddocs.yml`` with this inside::
 
+  name: Run tests
+
+  # Run for each push to a PR and also when a PR is merged to master.
+  on: [pull_request, push]
+
+  jobs:
+
+    # Docs build job:
+    build-docs:
+      name: Build the docs
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-python@v2
+          with:
+            python-version: '3.x'
+        - run: pip install sphinx
+        - working-directory: ./doc
+          run: make html

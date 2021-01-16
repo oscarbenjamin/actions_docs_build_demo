@@ -27,12 +27,17 @@ jobs:
         run: make html
 
         # This makes the doc zip available from GitHub on a PR before the PR
-        # is merged. It also makes it possible to share the built docs from
-        # this job to the deploy job
+        # is merged. I'm not sure yet if that is a good idea. Apparently
+        # github "bills" for this storage but I don't know what impact that
+        # has for non-paying public open source repos.
+        #
+        # It also makes it possible to share the built docs from this job to
+        # the deploy job. It is not strictly necessary for that though as the
+        # deploy job could really just be a conditional step in this job.
       - name: Attach docs artifact
         uses: actions/upload-artifact@v2
         with:
-          name: doc.zip
+          name: built_docs
           path: doc/build/*
 
   # Docs deploy job
@@ -40,9 +45,18 @@ jobs:
     name: Deploy the docs
     runs-on: ubuntu-latest
 
+    # Only run this job on the master branch (after a PR is merged but not
+    # when the PR is pushed to).
+    if: github.ref == 'refs/heads/master'
+
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: built_docs
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: path/to/artifact
 
     # Check that this is merging to master
     #if: github.ref == 'refs/heads/master'
