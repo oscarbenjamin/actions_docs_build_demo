@@ -11,10 +11,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup Python 3.x
+        uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-      - run: pip install sphinx
-      - working-directory: ./doc
+
+      - name: Install sphinx
+        run: pip install sphinx
+
+      - name: Build docs
+        working-directory: ./doc
         run: make html
+
+        # This makes the doc zip available from GitHub on a PR before the PR
+        # is merged. It also makes it possible to share the built docs from
+        # this job to the deploy job
+      - name: Attach docs artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: doc.zip
+          path: doc/build/*
+
+  # Docs deploy job
+  deploy-docs:
+    name: Deploy the docs
+    runs-on: ubuntu-latest
+
+    # Check that this is merging to master
+    #if: github.ref == 'refs/heads/master'
+    #- name: Deploy
+    #uses: peaceiris/actions-gh-pages@v3
+    #with:
+      #github_token: ${{ secrets.GITHUB_TOKEN }}
+      #publish_dir: ./public
